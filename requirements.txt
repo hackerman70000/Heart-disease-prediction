@@ -1,2 +1,6 @@
 ucimlrepo
 pandas
+Pyarrow
+seaborn
+matplotlib
+os
