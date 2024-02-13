@@ -33,7 +33,6 @@ def save_image(fig, filename):
 def process_target(df):
     df['target'] = df['num'].apply(lambda x: 1 if x > 0 else 0)
     df.drop('num', axis=1, inplace=True)
-    print(df['target'].value_counts())
     return df
 
 
