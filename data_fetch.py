@@ -1,6 +1,14 @@
 import pandas as pd
 from ucimlrepo import fetch_ucirepo
 
+"""
+Data source:
+Janosi,Andras, Steinbrunn,William, Pfisterer,Matthias, and Detrano,Robert.
+(1988). Heart Disease.
+UCI Machine Learning Repository.
+https://doi.org/10.24432/C52P4X.
+"""
+
 
 def fetch_data():
     try:
