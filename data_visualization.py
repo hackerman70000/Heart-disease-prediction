@@ -50,12 +50,12 @@ def print_info(df):
 
 def plot_histograms(df):
     df = map_categorical_values(df)
-    columns = ['age', 'trestbps', 'chol', 'thalach']
+    columns = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
     plt.figure(figsize=(20, 10))
     plt.suptitle('Heart disease incidence by different features', fontsize=20)
 
     for i, column in enumerate(columns, start=1):
-        plt.subplot(2, 2, i)
+        plt.subplot(3, 2, i)
         sns.histplot(x=column, hue='target', data=df, palette='viridis', kde=True)
         plt.title(column)
 
@@ -117,6 +117,16 @@ def plots(df):
     plt.show()
 
 
+def detect_outliers(df):
+    for col_name, col_values in df[['age', 'trestbps', 'chol', 'thalach', 'oldpeak']].items():
+        q1 = col_values.quantile(0.25)
+        q3 = col_values.quantile(0.75)
+        IRQ = q3 - q1
+        outliers = col_values[(col_values <= q1 - 1.5 * IRQ) | (col_values >= q3 + 1.5 * IRQ)]
+        percentage_outliers = len(outliers) * 100.0 / len(df)
+        print("Column {} outliers = {}%".format(col_name, round(percentage_outliers, 2)))
+
+
 if __name__ == '__main__':
     try:
         df = pd.read_csv('heart_disease.csv')
@@ -131,4 +141,5 @@ if __name__ == '__main__':
     df = process_target(df)
     print_info(df)
     df = df.dropna()
+    detect_outliers(df)
     plots(df)

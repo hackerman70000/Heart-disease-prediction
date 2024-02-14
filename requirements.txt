@@ -6,3 +6,5 @@ matplotlib
 os
 scikit_learn
 xgboost
+numpy
+tabulate
