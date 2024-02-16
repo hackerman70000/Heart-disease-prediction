@@ -121,13 +121,13 @@ def detect_outliers(df):
     for col_name, col_values in df[['age', 'trestbps', 'chol', 'thalach', 'oldpeak']].items():
         q1 = col_values.quantile(0.25)
         q3 = col_values.quantile(0.75)
-        IRQ = q3 - q1
-        outliers = col_values[(col_values <= q1 - 1.5 * IRQ) | (col_values >= q3 + 1.5 * IRQ)]
+        irq = q3 - q1
+        outliers = col_values[(col_values <= q1 - 1.5 * irq) | (col_values >= q3 + 1.5 * irq)]
         percentage_outliers = len(outliers) * 100.0 / len(df)
         print("Column {} outliers = {}%".format(col_name, round(percentage_outliers, 2)))
 
 
-if __name__ == '__main__':
+def main():
     try:
         df = pd.read_csv('heart_disease.csv')
     except FileNotFoundError:
@@ -143,3 +143,7 @@ if __name__ == '__main__':
     df = df.dropna()
     detect_outliers(df)
     plots(df)
+
+
+if __name__ == '__main__':
+    main()

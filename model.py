@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -38,6 +39,13 @@ def print_results(precision, recall, accuracy, mse):
     print(tabulate(table, headers=["Metric", "Value"], tablefmt="grid"))
 
 
+def evaluate_model(pipeline, X_train, X_test, y_train, y_test):
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    results(y_test, y_pred)
+    return accuracy_score(y_test, y_pred)
+
+
 def handle_outliers(df):
     for col in ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']:
         q1 = df[col].quantile(0.25)
@@ -63,13 +71,10 @@ def XGBoost_pipeline(X_train, X_test, y_train, y_test):
     ])
 
     cv_scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring='accuracy')
-    pipeline.fit(X_train, y_train)
 
-    y_pred = pipeline.predict(X_test)
-
-    print('Results for XGBoost pipeline:')
+    print('\n', 'Results for XGBoost pipeline:')
     print("Mean CV accuracy:", round(np.mean(cv_scores), 3))
-    results(y_test, y_pred)
+    return evaluate_model(pipeline, X_train, X_test, y_train, y_test)
 
 
 def SVM_pipeline(X_train, X_test, y_train, y_test):
@@ -80,13 +85,10 @@ def SVM_pipeline(X_train, X_test, y_train, y_test):
     ])
 
     cv_scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring='accuracy')
-    pipeline.fit(X_train, y_train)
-
-    y_pred = pipeline.predict(X_test)
 
     print('\n', 'Results for SVM pipeline:')
     print("Mean CV accuracy:", round(np.mean(cv_scores), 3))
-    results(y_test, y_pred)
+    return evaluate_model(pipeline, X_train, X_test, y_train, y_test)
 
 
 def LR_pipeline(X_train, X_test, y_train, y_test):
@@ -97,13 +99,10 @@ def LR_pipeline(X_train, X_test, y_train, y_test):
     ])
 
     cv_scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring='accuracy')
-    pipeline.fit(X_train, y_train)
-
-    y_pred = pipeline.predict(X_test)
 
     print('\n', 'Results for Logistic Regression pipeline:')
     print("Mean CV accuracy:", round(np.mean(cv_scores), 3))
-    results(y_test, y_pred)
+    return evaluate_model(pipeline, X_train, X_test, y_train, y_test)
 
 
 def KN_pipeline(X_train, X_test, y_train, y_test):
@@ -114,16 +113,60 @@ def KN_pipeline(X_train, X_test, y_train, y_test):
     ])
 
     cv_scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring='accuracy')
-    pipeline.fit(X_train, y_train)
-
-    y_pred = pipeline.predict(X_test)
 
     print('\n', 'Results for KNeighbors pipeline:')
     print("Mean CV accuracy:", round(np.mean(cv_scores), 3))
-    results(y_test, y_pred)
+    return evaluate_model(pipeline, X_train, X_test, y_train, y_test)
 
 
-if __name__ == "__main__":
+def evaluate_models_iteratively(X, y, num):
+    accuracies = {'KNeighbors': [], 'Logistic Regression': [], 'SVM': [], 'XGBoost': []}
+
+    for i in range(num):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+        KN_acc = KN_pipeline(X_train, X_test, y_train, y_test)
+        LR_acc = LR_pipeline(X_train, X_test, y_train, y_test)
+        SVM_acc = SVM_pipeline(X_train, X_test, y_train, y_test)
+        XGB_acc = XGBoost_pipeline(X_train, X_test, y_train, y_test)
+
+        accuracies['KNeighbors'].append(KN_acc)
+        accuracies['Logistic Regression'].append(LR_acc)
+        accuracies['SVM'].append(SVM_acc)
+        accuracies['XGBoost'].append(XGB_acc)
+
+    mean_accuracies = {model: np.mean(acc_list) for model, acc_list in accuracies.items()}
+
+    plot_performance(accuracies, mean_accuracies)
+
+
+def evaluate_models_once(X, y):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    KN_pipeline(X_train, X_test, y_train, y_test)
+    LR_pipeline(X_train, X_test, y_train, y_test)
+    SVM_pipeline(X_train, X_test, y_train, y_test)
+    XGBoost_pipeline(X_train, X_test, y_train, y_test)
+
+
+def plot_performance(accuracies, mean_accuracies):
+    plt.figure(figsize=(10, 6))
+    for model, acc_list in accuracies.items():
+        acc_list_sorted = sorted(acc_list)
+        plt.plot([acc_list_sorted[0], acc_list_sorted[-1]], [model, model], 'b-')
+        plt.plot([mean_accuracies[model]], [model], 'bo')
+        plt.plot([acc_list_sorted[0]], [model], 'b|', markersize=10)
+        plt.plot([acc_list_sorted[-1]], [model], 'b|', markersize=10)
+
+    plt.title('Accuracy of Different Models')
+    plt.xlabel('Accuracy')
+    plt.ylabel('Model')
+    plt.yticks(range(len(accuracies)), list(accuracies.keys()))
+    plt.grid(axis='y')
+    plt.show()
+
+
+def main():
     try:
         df = pd.read_csv('heart_disease.csv')
     except FileNotFoundError:
@@ -142,9 +185,12 @@ if __name__ == "__main__":
             'thal']]
     y = df['target']
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Example usage: models evaluated iteratively with 100 iterations
+    evaluate_models_iteratively(X, y, 100)
 
-    KN_pipeline(X_train, X_test, y_train, y_test)
-    LR_pipeline(X_train, X_test, y_train, y_test)
-    SVM_pipeline(X_train, X_test, y_train, y_test)
-    XGBoost_pipeline(X_train, X_test, y_train, y_test)
+    # Example usage: single model evaluation
+    evaluate_models_once(X, y)
+
+
+if __name__ == "__main__":
+    main()

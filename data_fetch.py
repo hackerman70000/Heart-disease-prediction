@@ -2,10 +2,7 @@ import pandas as pd
 from ucimlrepo import fetch_ucirepo
 
 """
-Data source:
-Janosi,Andras, Steinbrunn,William, Pfisterer,Matthias, and Detrano,Robert.
-(1988). Heart Disease.
-UCI Machine Learning Repository.
+Janosi A., Steinbrunn W., Pfisterer M., & Detrano R. (1988). Heart Disease. UCI Machine Learning Repository.
 https://doi.org/10.24432/C52P4X.
 """
 
@@ -22,6 +19,8 @@ def fetch_data():
     except Exception as e:
         print(f'Error fetching data: {e}')
 
+def main():
+    fetch_data()
 
 if __name__ == '__main__':
-    fetch_data()
+    main()
