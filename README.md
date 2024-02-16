@@ -59,12 +59,12 @@ Data is fetched from the UCI repository and saved as a .csv file.
 - Data exploration was done using pandas library.
 - Using seaborn and matplotlib, I created the following visualizations:
     - correlation matrix to see the correlation between the features \
-      <img src="./images/correlation.png" width="50%">
+      <img src="./images/correlation.png" width="75%">
     - distribution of the features \
-      <img src="./images/distribution.png" width="50%">
-      <img src="./images/histplot.png" width="50%">
+      <img src="./images/distribution.png" width="75%">
+      <img src="./images/histplot.png" width="75%">
     - pairplot of the features \
-      <img src="./images/pairplot.png" width="50%">
+      <img src="./images/pairplot.png" width="75%">
 
 ### Preprocessing
 
@@ -104,7 +104,9 @@ Data is fetched from the UCI repository and saved as a .csv file.
 | Logistic Regression | 0.83                | 0.81     |
 | KNNeighbors         | 0.82                | N/A      |
 
-<img src="./images/accuracy.png" width="50%">
+<center>
+<img src="./images/accuracy.png" width="75%">
+</center>
 
 ## References
 
