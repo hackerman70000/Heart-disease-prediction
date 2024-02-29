@@ -4,7 +4,7 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_score, recall_score, accuracy_score, mean_squared_error
+from sklearn.metrics import precision_score, recall_score, accuracy_score
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
@@ -25,16 +25,14 @@ def results(y_test, y_pred):
     precision = precision_score(y_test, y_pred, zero_division=1)
     recall = recall_score(y_test, y_pred, zero_division=1)
     accuracy = accuracy_score(y_test, y_pred)
-    mse = mean_squared_error(y_test, y_pred)
-    print_results(precision, recall, accuracy, mse)
+    print_results(precision, recall, accuracy)
 
 
-def print_results(precision, recall, accuracy, mse):
+def print_results(precision, recall, accuracy):
     table = [
         ["Precision", round(precision, 3)],
         ["Recall", round(recall, 3)],
         ["Accuracy", round(accuracy, 3)],
-        ["Mean Squared Error", round(mse, 3)]
     ]
     print(tabulate(table, headers=["Metric", "Value"], tablefmt="grid"))
 

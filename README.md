@@ -88,7 +88,6 @@ Data is fetched from the UCI repository and saved as a .csv file.
     - Accuracy
     - Precision
     - Recall
-    - Mean Squared Error
 
 ## Results
 
